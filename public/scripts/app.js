@@ -1,97 +1,96 @@
 'use strict';
 
+console.log('App.js is running');
 // JSX
 var appObject = {
-    title: 'This is a JSX Header',
-    subtitle: "Mafo!!! Awa ti Naira Marley"
+    title: 'Indecision App',
+    subtitle: "Put your life in the hands of a computer",
+    options: []
 };
 
-var template = React.createElement(
-    'div',
-    null,
-    React.createElement(
-        'h1',
-        null,
-        appObject.title
-    ),
-    React.createElement(
-        'p',
-        null,
-        appObject.subtitle
-    )
-);
+var onFormSubmit = function onFormSubmit(e) {
+    e.preventDefault();
 
-var user = {
-    name: 'Emmnauel Olusola',
-    age: 21,
-    location: 'Enugu'
-};
+    var option = e.target.elements.option.value;
 
-var getLocation = function getLocation(location) {
-    if (location) {
-        return React.createElement(
-            'p',
-            null,
-            'Location: ',
-            location
-        );
+    if (option) {
+        appObject.options.push(option);
+        e.target.elements.option.value = '';
+        renderAppObject();
     }
 };
-// true ? valueToShowWhenTrue : valueToShowWhenForce - Ternary Operator
-// true && useThisWhenItsTrue
 
-// const templateTwo = (
-//     <div>
-//         <h1>{user.name ? user.name : 'Hey, Anonymous'}</h1>
-//         {(user.age && user.age >= 21) && <p>Age: {user.age}</p>}
-//         {getLocation(user.location)}
-//     </div>
-// )
+var removeAll = function removeAll() {
+    appObject.options = [];
+    renderAppObject();
+};
 
-var count = 0;
-var addOne = function addOne() {
-    count++;
-    renderCounterApp();
-};
-var minusOne = function minusOne() {
-    count--;
-    renderCounterApp();
-};
-var reset = function reset() {
-    count = 0;
-    renderCounterApp();
+var onMakeDecision = function onMakeDecision() {
+    var randomNum = Math.floor(Math.random() * appObject.options.length);
+    var option = appObject.options[randomNum];
+    alert('You Should ' + option);
 };
 
 var appRoot = document.getElementById('app');
 
-var renderCounterApp = function renderCounterApp() {
-    var templateTwo = React.createElement(
+var renderAppObject = function renderAppObject() {
+    var template = React.createElement(
         'div',
         null,
         React.createElement(
             'h1',
             null,
-            'Count: ',
-            count,
-            ' '
+            appObject.title
+        ),
+        appObject.subtitle && React.createElement(
+            'p',
+            null,
+            appObject.subtitle
+        ),
+        React.createElement(
+            'p',
+            null,
+            appObject.options.length > 2 ? 'Here are your options' : 'No Options'
+        ),
+        React.createElement(
+            'p',
+            null,
+            appObject.options.length
         ),
         React.createElement(
             'button',
-            { id: '', className: '', onClick: addOne },
-            ' +1 '
+            { disabled: appObject.options.length === 0, onClick: onMakeDecision },
+            'What Should I Do?'
+        ),
+        appObject.options.length > 0 && React.createElement(
+            'button',
+            { onClick: removeAll },
+            'Remove All'
         ),
         React.createElement(
-            'button',
-            { id: '', className: '', onClick: minusOne },
-            ' -1 '
+            'ol',
+            null,
+            appObject.options.map(function (option) {
+                return React.createElement(
+                    'li',
+                    { key: option },
+                    option
+                );
+            })
         ),
         React.createElement(
-            'button',
-            { id: '', className: '', onClick: reset },
-            ' Reset '
+            'form',
+            { onSubmit: onFormSubmit },
+            React.createElement('input', { name: 'option', type: 'text' }),
+            React.createElement(
+                'button',
+                null,
+                'Add Option'
+            )
         )
     );
-    ReactDOM.render(templateTwo, appRoot);
+
+    ReactDOM.render(template, appRoot);
 };
 
-renderCounterApp();
+renderAppObject();
